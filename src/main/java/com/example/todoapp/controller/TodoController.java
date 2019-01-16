@@ -38,6 +38,23 @@ public class TodoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/todos/{id}")
+    public ResponseEntity<Todo> updateTodo(@PathVariable("id") String id, @Valid @RequestBody Todo todo) {
+        return todoRepository.findById(id)
+                .map(todoData -> {
+                    todoData.setTitle(todo.getTitle());
+                    todoData.setCompleted(todo.getCompleted());
+                    Todo updatedTodo = todoRepository.save(todoData);
+                    return ResponseEntity.ok().body(updatedTodo);
+                }).orElse(ResponseEntity.notFound().build());
+    }
 
-
+    @DeleteMapping("/todos/{id}")
+    public ResponseEntity<?> deleteTodo(@PathVariable("id") String id) {
+        return todoRepository.findById(id)
+                .map(todo -> {
+                    todoRepository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.notFound().build());
+    }
 }
